@@ -35,12 +35,12 @@ int check_error(int ret_val, const std::string &msg = "error", int err_val = -1)
  */
 class Log {
 public:
-    const std::string name;
+    const std::string path;
 private:
     int fd;
     sem_t *sem;
 public:
-    Log(const std::string &_name);
+    Log(const std::string &_path);
     ~Log();
     int print(const std::string &msg);
 };

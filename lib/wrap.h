@@ -11,6 +11,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <unistd.h>
 
 #include "utils.h"
@@ -124,12 +125,12 @@ namespace C_std {
         /*!
          * 用于保存客户端socket信息的数据结构
          */
-        class client_socket {
+        class ClientSocket {
         public:
             const int sockfd;       //客户端socket文件描述符
             const std::string ip;   //客户端ip地址
             const int port;         //客户端port
-            client_socket(int _sockfd = -1, int _port = -1, const std::string &_ip = "")
+            ClientSocket(int _sockfd = -1, int _port = -1, const std::string &_ip = "")
                     : sockfd(_sockfd)
                     , port(_port)
                     , ip(_ip)
@@ -141,7 +142,7 @@ namespace C_std {
          * @param sockfd        服务器socket文件描述符
          * @return              返回带有客户端socket信息的类
          */
-        client_socket easy_accept(int sockfd);
+        ClientSocket easy_accept(int sockfd);
 
         /*!
          * connect函数：客户端根据地址连接服务器
@@ -187,6 +188,17 @@ namespace C_std {
          * @return              读入字符的个数
          */
         int read_line(int fd, void *buf, size_t count);
+
+        /*!
+         * 添加错误处理的Select函数
+         * @param nfds 指定被监听的文件描述符的总数，通常被设置为select所监听的所有文件描述符中的最大值加1
+         * @param readfds 可读文件描述符集合,fd_set类型
+         * @param writefds 可写文件描述符集合,fd_set类型
+         * @param exceptfds 异常文件描述符集合,fd_set类型
+         * @param timeout 用来设置select函数的超时时间，返回select等待时间，失败返回不确定。如果给两个成员都传递0则非阻塞，如果传递NULL则阻塞
+         * @return 返回就绪文件描述符的总数，如果在超时时间内没有任何文件描述符就绪返回0，失败返回-1
+         */
+        int Select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
 
     }
 }

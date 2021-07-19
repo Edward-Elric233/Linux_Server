@@ -162,16 +162,16 @@ namespace C_std {
             return cfd;
         }
 
-        client_socket easy_accept(int sockfd) {
+        ClientSocket easy_accept(int sockfd) {
             struct sockaddr_in addr;
             socklen_t addr_len = sizeof(addr);
             memset(&addr, 0, sizeof(addr));
             int cfd = Accept(sockfd, reinterpret_cast<struct sockaddr *>(&addr), &addr_len);
-            char buf[BUFSIZ];
-            if (inet_ntop(AF_INET, &addr.sin_addr.s_addr, buf, BUFSIZ) == nullptr) {
+            char buf[INET_ADDRSTRLEN];
+            if (inet_ntop(AF_INET, &addr.sin_addr.s_addr, buf, INET_ADDRSTRLEN) == nullptr) {
                 perror_exit("af to ip error");
             }
-            return client_socket(cfd, ntohs(addr.sin_port), buf);
+            return ClientSocket(cfd, ntohs(addr.sin_port), buf);
         }
 
         int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
@@ -190,6 +190,10 @@ namespace C_std {
                 perror_exit("af to ip error");            //af不包含有效的地址族
             }
             return Connect(sockfd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr));
+        }
+
+        int Select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout) {
+            return check_error(select(nfds, readfds, writefds, exceptfds, timeout), "select error");
         }
 
     }

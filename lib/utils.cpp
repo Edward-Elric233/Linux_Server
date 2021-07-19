@@ -11,10 +11,11 @@ void perror_exit(const string &msg) {
     exit(1);
 }
 
-Log::Log(const std::string &_name):name(_name) {
+Log::Log(const std::string &_path):path(_path) {
     //打开用于记录日志的文件
-    fd = open(name.c_str(), O_RDWR | O_CREAT | O_APPEND, 0644);
+    fd = open(path.c_str(), O_RDWR | O_CREAT | O_APPEND, 0644);
     //在mmap上创建信号量用于进行文件的写操作，防止时序竞态
+    //使用匿名映射区使得该信号量在子进程间共享，要求日志类在父进程中创建
     void *p = mmap(nullptr, sizeof(sem_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANON, -1, 0);;
     if (p == MAP_FAILED) {
         perror("mmap error");
