@@ -121,6 +121,11 @@ namespace C_std {
             return check_error(socket(domain, type, protocol), "socket error");
         }
 
+        void port_reuse(int sockfd) {
+            int opt = 1;
+            setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+        }
+
         int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
             return check_error(bind(sockfd, addr, addrlen), "bind error");
         }
@@ -194,6 +199,10 @@ namespace C_std {
 
         int Select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout) {
             return check_error(select(nfds, readfds, writefds, exceptfds, timeout), "select error");
+        }
+
+        int Poll(struct pollfd *fds, nfds_t nfds, int timeout) {
+            return check_error(poll(fds, nfds, timeout), "poll error");
         }
 
     }

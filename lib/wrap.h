@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <unistd.h>
+#include <sys/poll.h>
 
 #include "utils.h"
 
@@ -86,6 +87,12 @@ namespace C_std {
          * @return          返回所创建socket的文件描述符，失败返回-1
          */
         int Socket(int domain, int type, int protocol);
+
+        /*!
+         * 设置端口复用
+         * @param sockfd
+         */
+        void port_reuse(int sockfd);
 
         /*!
          * bind函数：将socket与对应的IP地址和端口绑定，如果不手动绑定在accept或connect的是时候会自动对socket进行绑定到本地，端口随机
@@ -190,7 +197,7 @@ namespace C_std {
         int read_line(int fd, void *buf, size_t count);
 
         /*!
-         * 添加错误处理的Select函数
+         * 添加错误处理的select函数
          * @param nfds 指定被监听的文件描述符的总数，通常被设置为select所监听的所有文件描述符中的最大值加1
          * @param readfds 可读文件描述符集合,fd_set类型
          * @param writefds 可写文件描述符集合,fd_set类型
@@ -199,6 +206,15 @@ namespace C_std {
          * @return 返回就绪文件描述符的总数，如果在超时时间内没有任何文件描述符就绪返回0，失败返回-1
          */
         int Select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+
+        /*!
+         * 添加出错处理的poll函数
+         * @param fds pollfd数组，指定所有我们感兴趣的文件描述符的事件
+         * @param nfds 指定被监听事件集合fds的大小
+         * @param timeout poll的超时值，单位是毫秒，为-1时，阻塞等待，为0时，非阻塞
+         * @return 返回就绪文件描述符的个数，如果在超时时间内没有任何文件描述符就绪，返回0，失败返回-1
+         */
+        int Poll(struct pollfd *fds, nfds_t nfds, int timeout);
 
     }
 }

@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
                     clientAddr.erase(*cfd);
                     fdset.erase(cfd++);
                 }
-                if (--n == 0) continue;       //没有其他文件描述符就绪
+                if (--n == 0) break;       //没有其他文件描述符就绪
             } else {
                 ++cfd;
             }

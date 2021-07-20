@@ -8,6 +8,6 @@ include_directories(lib)
 add_executable(Server
         lib/wrap.cpp
         lib/utils.cpp
-        Chapter9/9_1/Server.cpp)
+        Chapter9/9_2/9_2.cpp)
 
 target_link_libraries(Server pthread)
