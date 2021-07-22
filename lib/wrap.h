@@ -14,6 +14,7 @@
 #include <sys/select.h>
 #include <unistd.h>
 #include <sys/poll.h>
+#include <sys/epoll.h>
 
 #include "utils.h"
 
@@ -216,6 +217,32 @@ namespace C_std {
          */
         int Poll(struct pollfd *fds, nfds_t nfds, int timeout);
 
+        /*!
+         * 创建管理文件描述符的内核事件表
+         * @param size 提示内核事件表需要多大
+         * @return 保存内核事件表的文件描述符，用作其他epoll系统调用的第一个参数
+         */
+        int Epoll_create(int size);
+
+        /*!
+         * 操作epoll内核事件表
+         * @param epfd 指向内核事件表的文件描述符：epoll_create的返回值
+         * @param op 指定操作类型：EPOLL_CTL_ADD | EPOLL_CTL_MOD | EPOLL_CTL_DEL
+         * @param fd 操作的文件描述符
+         * @param event epoll_event结构指针类型，epoll_event.events指定事件类型，epoll_event.data存储用户数据
+         * @return 成功返回0，失败返回-1
+         */
+        int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+
+        /*!
+         * 监听epoll内核事件表上的文件描述符
+         * @param epfd 指向内核事件表的文件描述符
+         * @param events 用于epoll_wait返回就绪的epoll_event事件
+         * @param maxevents 用于指定events的长度
+         * @param timeout 超时函数，单位是毫秒，为-1时，阻塞等待，为0时，非阻塞
+         * @return 返回就绪的文件描述符的个数
+         */
+        int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     }
 }
 

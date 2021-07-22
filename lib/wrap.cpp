@@ -205,6 +205,18 @@ namespace C_std {
             return check_error(poll(fds, nfds, timeout), "poll error");
         }
 
+        int Epoll_create(int size) {
+            return check_error(epoll_create(size), "epoll_create error");
+        }
+
+        int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event) {
+            return check_error(epoll_ctl(epfd, op, fd, event), "epoll_ctl error");
+        }
+
+        int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout) {
+            return check_error(epoll_wait(epfd, events, maxevents, timeout), "epoll_wait error");
+        }
+
     }
 
 }
