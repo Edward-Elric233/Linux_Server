@@ -12,7 +12,7 @@ namespace C_std {
         if (n < 0) {
             //出错处理
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                goto AGAIN;
+                //非阻塞调用，让程序进行处理
             } else if (errno == EINTR) {
                 //慢速系统调用，如果被注册捕捉函数的信号中断则重新读取
                 goto AGAIN;
@@ -29,7 +29,6 @@ namespace C_std {
         if (n < 0) {
             //出错处理
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                goto AGAIN;
             } else if (errno == EINTR) {
                 //慢速系统调用，如果被注册捕捉函数的信号中断则重新读取
                 goto AGAIN;
@@ -214,7 +213,15 @@ namespace C_std {
         }
 
         int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout) {
-            return check_error(epoll_wait(epfd, events, maxevents, timeout), "epoll_wait error");
+            int ret = epoll_wait(epfd, events, maxevents, timeout);
+            if (ret == -1) {
+                if (errno = EINTR) {
+                    return -1;
+                } else {
+                    perror_exit("epoll_wait error");
+                }
+            }
+            return ret;
         }
 
     }
