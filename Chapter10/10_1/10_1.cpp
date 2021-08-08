@@ -120,7 +120,7 @@ void epoll_listen(const string &ip = "127.0.0.1", int port = 12345) {
     lfd = Socket(AF_INET, SOCK_STREAM, 0);
     port_reuse(lfd);
     easy_bind(lfd, port, ip.c_str());
-    Listen(lfd, 128);
+    Listen(lfd, 3);
 
     epfd = Epoll_create(10);
     epoll_add_fd(lfd, true);
