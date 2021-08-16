@@ -10,12 +10,14 @@
 #include <signal.h>
 #include <cstring>
 #include <cstdio>
+#include <semaphore.h>
 
 using namespace std;
 
 namespace {
     pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
+    sem_t sem1, sem2;
 }
 
 void alarm_handler(int signo) {
@@ -62,24 +64,32 @@ struct timeval my_sleep(struct timeval it_value) {
 }
 
 void *task_a(void *) {
-    pthread_mutex_lock(&mutex1);
-    printf("A have locked mutex1\n");
+//    pthread_mutex_lock(&mutex1);
+    sem_wait(&sem1);
+    printf("A have locked sem1\n");
     my_sleep({3, 0});
-    pthread_mutex_lock(&mutex2);
-    printf("A have locked mutex2\n");
-    pthread_mutex_unlock(&mutex2);
-    pthread_mutex_unlock(&mutex1);
+//    pthread_mutex_lock(&mutex2);
+    sem_wait(&sem2);
+    printf("A have locked sem2\n");
+//    pthread_mutex_unlock(&mutex2);
+//    pthread_mutex_unlock(&mutex1);
+    sem_post(&sem2);
+    sem_post(&sem1);
 }
 
 
 void *task_b(void *) {
-    pthread_mutex_lock(&mutex2);
-    printf("B have locked mutex2\n");
+//    pthread_mutex_lock(&mutex2);
+    sem_wait(&sem2);
+    printf("B have locked sem2\n");
     my_sleep({3, 0});
-    pthread_mutex_lock(&mutex1);
-    printf("B have locked mutex1\n");
-    pthread_mutex_unlock(&mutex1);
-    pthread_mutex_unlock(&mutex2);
+//    pthread_mutex_lock(&mutex1);
+    sem_wait(&sem1);
+    printf("B have locked sem1\n");
+//    pthread_mutex_unlock(&mutex1);
+//    pthread_mutex_unlock(&mutex2);
+    sem_post(&sem1);
+    sem_post(&sem2);
 }
 
 int main() {
@@ -87,6 +97,8 @@ int main() {
 //        my_sleep({1, 0});
 //        printf("hello\n");
 //    }
+    sem_init(&sem1, PTHREAD_PROCESS_SHARED, 1);
+    sem_init(&sem2, PTHREAD_PROCESS_SHARED, 1);
     pthread_t tid_a, tid_b;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
@@ -98,6 +110,9 @@ int main() {
     pthread_join(tid_a, nullptr);
     pthread_join(tid_b, nullptr);
 
+
+    sem_destroy(&sem1);
+    sem_destroy(&sem2);
     pthread_mutex_destroy(&mutex1);
     pthread_mutex_destroy(&mutex2);
     return 0;

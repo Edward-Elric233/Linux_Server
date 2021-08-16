@@ -53,6 +53,15 @@ namespace C_std {
     }
 }
 
+/*!
+ * pthread库的错误处理函数
+ * @param ret_val
+ * @param msg
+ * @param ok_val    0
+ * @return          成功返回0，失败返回errno
+ */
+int pthread_check_error(int ret_val, const std::string &msg = "error", int ok_val = 0);
+
 namespace POSIX {
     //封装一些POSIX库中的工具函数，主要是多线程库
     namespace multithreading {

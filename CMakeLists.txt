@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(lib)
 
 add_executable(Test
-        Chapter14/14_1/14_1.cpp)
+        Chapter14/14_2/14_2.cpp lib/utils.cpp lib/wrap.cpp)
 
 target_link_libraries(Test pthread)
 
